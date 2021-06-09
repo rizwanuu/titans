@@ -1,0 +1,224 @@
+@import "../../../globalStyles/scss/variables.scss";
+
+.category {
+  // top content css
+  .categoryContainer {
+    width: 1140px;
+    max-width: 100vw;
+    margin: 0 auto;
+    padding: 0 4rem;
+  }
+  .for-mobil {
+    display: none;
+  }
+  .mobile-filters {
+    display: none;
+  }
+  .mobile-filter-view {
+    display: flex;
+    align-items: center;
+    background-color: #efefef;
+    padding: 1rem 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .farm {
+    // font-family: Open Sans;
+    font-style: normal;
+    font-weight: 800;
+    font-size: 64px;
+    line-height: 150%;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #323232;
+  }
+
+  .names {
+    display: flex;
+  }
+
+  .name-box {
+    width: 200px;
+    height: 48px;
+    background: #ffffff;
+    border: 2px solid #9d9d9d;
+    box-sizing: border-box;
+    margin-right: 23px;
+    padding: 10px 35px;
+    cursor: pointer;
+  }
+
+  .name {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 150%;
+    text-align: center;
+    color: #9d9d9d;
+  }
+  //tips and recommentataions scss
+  .tips-view {
+    padding: 15px;
+    height: 100%;
+    background-color: #f1f1f1;
+  }
+  .tips-name {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 800;
+    font-size: 18px;
+  }
+  .tips-date {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 150%;
+    color: #323232;
+    margin-top: 20px;
+    padding-right: 30px;
+  }
+  .view-social {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+  }
+
+  // last view products scss
+  .productRow {
+    display: flex;
+    justify-content: space-between;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    padding: 0 3rem;
+  }
+  .latest-view {
+    height: 100%;
+    background-color: #f1f1f1;
+    @media (min-width: $large-screen) {
+      padding: 2rem 8rem;
+    }
+  }
+
+  .last-view {
+    // font-family: Open Sans;
+    font-style: normal;
+    font-weight: 800;
+    font-size: 36px;
+    line-height: 150%;
+    text-align: center;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #323232;
+    // margin-top: 15px;
+    // margin-bottom: 40px;
+  }
+
+  .view-card {
+    // width: 230px;
+    // height: 335px;
+    background: #ffffff;
+    border: 1px solid #ebebeb;
+    box-sizing: border-box;
+    padding: 12px;
+    margin: 5px 5px 50px 5px;
+    cursor: pointer;
+  }
+
+  .view-card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+  }
+
+  .view-name {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 150%;
+    color: #323232;
+    margin-top: 20px;
+    padding-right: 30px;
+  }
+
+  .view-price {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 150%;
+    color: #323232;
+    margin-top: 10px;
+  }
+
+  @media (max-width: $medium-screen) {
+    .tips-view {
+      display: block !important;
+    }
+    .farm {
+      font-size: 48px;
+    }
+    .categoryContainer {
+      padding: 0 2rem;
+    }
+    .names {
+      display: none;
+    }
+    .sortby {
+      display: none;
+    }
+    .mobile-sortby {
+      display: block;
+      padding: 1rem 0.5rem;
+      background: #efefef;
+    }
+    .last-view {
+      font-size: 27px;
+    }
+    .mobile-filters {
+      display: flex;
+      justify-content: space-between;
+      padding: 3rem 0;
+    }
+  }
+
+  @media (max-width: $small-screen) {
+    .farm {
+      font-size: 34px;
+    }
+  }
+
+  &__header {
+    text-align: center;
+    padding-top: $spacer * 4.5;
+    padding-bottom: $spacer * 4.5;
+    background-size: cover;
+    background-color: $blue-overlay;
+    background-blend-mode: multiply;
+
+    &__title {
+      background-color: $white;
+      display: inline-block;
+      transform: skew(-45deg);
+      padding: 1.5vw 9vw;
+
+      h1 {
+        display: inline-block;
+        transform: skew(45deg);
+        font-weight: $bold-font-weight;
+        text-transform: uppercase;
+        color: $blue;
+        font-size: 8vw;
+        font-weight: 900;
+
+        @media (min-width: $small-screen) {
+          font-size: 4vw;
+        }
+      }
+    }
+  }
+}

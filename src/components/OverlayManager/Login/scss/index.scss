@@ -1,0 +1,185 @@
+@import "../../../../globalStyles/scss/variables.scss";
+
+
+.file{
+  width: 128px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 1px solid rgba(50, 50, 50, 0.4);
+  background-color: white;
+  margin-right: 1rem;
+}
+
+.login {
+  // width: 25rem;
+  max-width: 100vw;
+
+  &__tabs {
+    display: flex;
+
+    span {
+      flex-grow: 1;
+      width: 100%;
+      background-color: #e5e5e5;
+      text-transform: uppercase;
+      font-weight: $bold-font-weight;
+      text-align: center;
+      padding: $spacer;
+      border-bottom: 1px solid #e5e5e5;
+      cursor: pointer;
+
+      &:first-of-type {
+        border-right: 1px solid $white;
+      }
+
+      &:last-of-type {
+        border-left: 1px solid $white;
+      }
+
+      &.active-tab {
+        background-color: #f4f4f4;
+        border-bottom: 1px solid #c41425;
+      }
+    }
+  }
+
+  &__content {
+    padding: 5rem 10rem;
+    background-color: #f4f4f4;
+
+    .input {
+      margin-bottom: $spacer;
+    }
+    @media (max-width: $small-screen) {
+      padding: 3rem !important;
+    }
+
+    // &__button {
+    //   margin-top: $spacer * 2;
+    //   padding: 0 $spacer * 1.5;
+    //   text-align: center;
+    // }
+
+    &__password-reminder {
+      color: $gray;
+      font-size: $small-font-size;
+      margin-top: $spacer * 2;
+    }
+    @media (min-width: $medium-screen) {
+      display: flex;
+      padding: 0 !important;
+    }
+    .signin {
+      font-style: normal;
+      font-weight: 800;
+      font-size: 36px;
+      line-height: 150%;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+
+      color: #323232;
+    }
+    .signintext {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 22px;
+      color: #005596;
+      padding: 1rem 0;
+    }
+  }
+  .othermethod {
+    padding: 2rem 3rem 5rem 3rem;
+    display: block;
+    text-align: center;
+    h2 {
+      font-style: normal;
+      font-weight: 800;
+      font-size: 24px;
+      line-height: 150%;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #323232;
+      padding-bottom: 2rem;
+    }
+    // .fb-btn {
+    //   width: 298px;
+    //   height: 60px;
+    //   background: #3b5998;
+    // }
+
+    .two-btn {
+      display: flex;
+      justify-content: center;
+    }
+    .fb-btn {
+      width: 298px;
+      height: 60px;
+      background: #3b5998 !important;
+      box-sizing: border-box;
+      border-radius: 0px !important;
+
+      font-family: Open Sans;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 16px;
+      line-height: 150%;
+      letter-spacing: 0.05em;
+    }
+    .fb-btn:focus {
+      box-shadow: none !important;
+    }
+    .go-btn {
+      width: 297px;
+      height: 60px;
+      border: 2px solid #eaeaea !important;
+      background-color: whitesmoke !important ;
+      color: black !important;
+      box-sizing: border-box;
+      border-radius: 0px !important;
+      margin-left: 30px;
+
+      font-family: Open Sans;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 16px;
+      line-height: 150%;
+      letter-spacing: 0.05em;
+    }
+    .go-btn:focus {
+      box-shadow: none !important;
+    }
+    .mari {
+      // margin-right: 5px;
+      display: flex;
+      justify-content: center;
+    }
+    .face {
+      padding-right: 0.5rem;
+    }
+    .goog {
+      padding-right: 0.5rem;
+    }
+
+    @media (max-width: $small-screen) {
+      padding: 1rem !important;
+      h2 {
+        font-size: 15px !important;
+      }
+      .two-btn {
+        display: block;
+        .go-btn {
+          margin-left: 0 !important;
+          margin-top: 1.5rem;
+          width: 100% !important;
+        }
+        .fb-btn {
+          width: 100% !important;
+        }
+      }
+    }
+  }
+}

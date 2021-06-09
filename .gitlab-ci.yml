@@ -1,0 +1,182 @@
+
+variables:
+  GIT_SUBMODULE_STRATEGY: none
+  GIT_DEPTH: "5"
+
+  POSTGRES_ENABLED: "false"
+  K8S_SECRET_APP_MOUNT_URI: /
+  K8S_SECRET_API_URI: https://saleor-api.p.kencove.com/graphql/
+  K8S_SECRET_STATIC_URL: /
+# User:
+  # BUILD_DISABLED: 1
+
+# Disabled:
+  TEST_DISABLED: 1
+  # CODE_QUALITY_DISABLED: 1
+  DAST_DISABLED: 1
+  # SECRET_DETECTION_DISABLED: 1
+  # LICENSE_MANAGEMENT_DISABLED: 1
+  # PERFORMANCE_DISABLED: 1
+  # LOAD_PERFORMANCE_DISABLED: 1
+  # SAST_DISABLED: 1
+
+# Enabled:
+  STAGING_ENABLED: 1
+  CI_KUBERNETES_ACTIVE: 1
+
+# App/Odoo defaults:
+
+# in base
+  DOCKER_DRIVER: overlay2
+  ROLLOUT_RESOURCE_TYPE: deployment
+  DOCKER_TLS_CERTDIR: ""
+
+build: # from template, support disable for ci test
+  stage: build
+  image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image:v0.4.0"
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive # normal
+    AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS: --build-arg=API_URI=https://saleor-api.staging.kencove.com/graphql/
+  services:
+    - docker:19.03.12-dind
+  script:
+    - |
+      echo "CI_APPLICATION_REPOSITORY: $CI_APPLICATION_REPOSITORY"
+      echo "CI_REGISTRY_IMAGE: $CI_REGISTRY_IMAGE"
+      echo "CI_COMMIT_REF_SLUG: $CI_COMMIT_REF_SLUG"
+      if [[ -z "$CI_COMMIT_TAG" ]]; then
+        export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG}
+        export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_SHA}
+      else
+        export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE}
+        export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
+      fi
+      echo "after CI_APPLICATION_REPOSITORY: $CI_APPLICATION_REPOSITORY"
+      echo "after CI_APPLICATION_TAG: $CI_APPLICATION_TAG"
+    - /build/build.sh
+  rules:
+    - if: '$BUILD_DISABLED'
+      when: never
+    - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
+
+.auto-deploy:
+  image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-deploy-image:v2.6.0"
+  dependencies: []
+
+review:
+  extends: .auto-deploy
+  variables:
+    K8S_SECRET_API_URI: https://saleor-api.staging.kencove.com/graphql/
+
+  stage: review
+  needs: [build]
+  script:
+    - if [[ -v BUILD_DISABLED ]] ; then export CI_APPLICATION_TAG=latest; echo "BUILD_DISABLED so CI_APPLICATION_TAG=latest"; fi
+    - auto-deploy check_kube_domain
+    - auto-deploy download_chart
+    - auto-deploy ensure_namespace
+    - auto-deploy create_secret
+    - |
+      [[ -z "$DEBUG" ]] && echo "not DEBUG" || env
+    - auto-deploy deploy
+    - auto-deploy persist_environment_url
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://$CI_PROJECT_ID-$CI_ENVIRONMENT_SLUG.$KUBE_INGRESS_BASE_DOMAIN
+    on_stop: stop_review
+  artifacts:
+    paths: [environment_url.txt]
+    when: always
+  rules:
+    - if: '$CI_KUBERNETES_ACTIVE == null || $CI_KUBERNETES_ACTIVE == ""'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$REVIEW_DISABLED'
+      when: never
+    - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
+
+staging:
+  extends: .auto-deploy
+  stage: staging
+  variables:
+    K8S_SECRET_API_URI: https://saleor-api.staging.kencove.com/graphql/
+  needs: [build]
+  script:
+    - if [[ -v BUILD_DISABLED ]] ; then export CI_APPLICATION_TAG=latest; echo "BUILD_DISABLED so CI_APPLICATION_TAG=latest"; fi
+    - auto-deploy check_kube_domain
+    - auto-deploy download_chart
+    - auto-deploy ensure_namespace
+    - auto-deploy create_secret
+    - |
+      [[ -z "$DEBUG" ]] && echo "not DEBUG" || env
+    - auto-deploy deploy
+    - auto-deploy persist_environment_url
+  environment:
+    name: staging
+    url: https://saleor-storefront.$KUBE_INGRESS_BASE_DOMAIN
+  rules:
+    - if: '$CI_KUBERNETES_ACTIVE == null || $CI_KUBERNETES_ACTIVE == ""'
+      when: never
+    - if: '$STAGING_ENABLED == null || $STAGING_ENABLED == ""'
+      when: never
+    - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
+      when: manual
+
+.production: &production_template
+  extends: .auto-deploy
+  stage: production
+  script:
+    - if [[ -v BUILD_DISABLED ]] ; then export CI_APPLICATION_TAG=latest; echo "BUILD_DISABLED so CI_APPLICATION_TAG=latest"; fi
+    - auto-deploy check_kube_domain
+    - auto-deploy download_chart
+    - auto-deploy ensure_namespace
+    - auto-deploy create_secret
+    - |
+      [[ -z "$DEBUG" ]] && echo "not DEBUG" || env
+    - auto-deploy deploy
+    - auto-deploy delete canary
+    - auto-deploy persist_environment_url
+  environment:
+    name: production
+    url: https://saleor-storefront.$KUBE_INGRESS_BASE_DOMAIN
+  artifacts:
+    paths: [environment_url.txt]
+    when: always
+
+production_manual:
+  <<: *production_template
+
+  variables:
+    K8S_SECRET_API_URI: https://saleor-api.p.kencove.com/graphql/
+
+  allow_failure: false
+  rules:
+    - if: '$CI_KUBERNETES_ACTIVE == null || $CI_KUBERNETES_ACTIVE == ""'
+      when: never
+    - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
+      when: manual
+
+stop_review:
+  extends: .auto-deploy
+  stage: cleanup
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - auto-deploy delete
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    action: stop
+  allow_failure: true
+  rules:
+    - if: '$CI_KUBERNETES_ACTIVE == null || $CI_KUBERNETES_ACTIVE == ""'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    - if: '$REVIEW_DISABLED'
+      when: never
+    - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
+      when: manual
+
+include:
+  - template: Auto-DevOps.gitlab-ci.yml

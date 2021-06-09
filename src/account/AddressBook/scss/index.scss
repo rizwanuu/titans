@@ -1,0 +1,47 @@
+@import "../../../globalStyles/scss/variables.scss";
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  @media(max-width: 442px){
+    display: block;
+    .new{
+      float: left;
+      margin-top: 1rem;
+    }
+  }
+}
+.title {
+  font-style: normal;
+  font-weight: 800;
+  font-size: 36px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.searchGroup {
+  margin-top: 3rem;
+  .searchField {
+    width: 421px;
+    height: 50px;
+    border: 1px solid rgba(50, 50, 50, 0.4);
+    
+    input {
+      outline: none;
+      width: 90%;
+      height: 100%;
+      border: none;
+      padding-left: 2rem;
+    }
+    img {
+      vertical-align: middle;
+    }
+    @media(max-width: 992px){
+      width: 100%;
+    }
+  }
+}
+
+.address-book-container {
+  width: 100%;
+}

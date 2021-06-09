@@ -1,0 +1,23 @@
+@import "../../../globalStyles/scss/variables.scss";
+
+.password-reset-form {
+  h1 {
+    font-size: 3rem;
+    line-height: 1;
+    font-weight: bold;
+    padding-bottom: 1rem;
+    @media(max-width: $medium-screen){
+      
+    }
+  }
+  p{
+    font-size: 14px;
+  }
+  .input {
+    margin: $spacer 0 $spacer * 2;
+  }
+
+  &__button {
+    margin-bottom: 2rem;
+  }
+}
